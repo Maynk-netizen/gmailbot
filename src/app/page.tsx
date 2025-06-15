@@ -1,103 +1,150 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { color, motion } from "motion/react";
+import Link from "next/link";
+import './page.css'
+import React from "react";
+import { AuroraBackground } from "../components/ui/aurora-background";
+import DecryptedText from "@/components/ui/homeElems/DecryptedText"
+import InfiniteScroll  from "@/components/ui/homeComps/InfiniteScroll"
+import FadeContent from "@/components/ui/homeElems/FadeContent"
+import ShinyText from "@/components/ui/homeComps/QNA"
+import { Orbitron } from 'next/font/google'; // Import the Orbit font
+import FeaturesSectionDemo from '@/components/ui/homeComps/Finalqna'
+const orbit = Orbitron({
+  subsets: ['latin'],
+  weight: ['400', '700'], // Specify the weights you need
+});
+const items = [
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/>},
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content:<img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/> },
+  { content: <img src="/ss.png"/>},
+  { content:<img src="/ss.png"/> },
+];
+export default function AuroraBackgroundDemo() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <AuroraBackground id="aura" >
+      <motion.div id="aura2"
+        initial={{ opacity: 0.0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.8,
+          ease: "easeInOut",
+        }}
+        className="relative flex flex-col gap-4 items-center justify-center px-4"
+      >
+        {/* <div className="text-3xl md:text-7xl font-bold dark:text-white text-center ${orbit.className}`}"> */}
+        <div className={`text-3xl md:text-7xl font-bold dark:text-white text-center ${orbit.className}`}>
+        <DecryptedText
+text="NIYOJAKA"
+speed={95}
+maxIterations={40}
+characters="ABCD1234!?"
+  animateOn="view"
+className="revealed"
+parentClassName="all-letters"
+encryptedClassName="encrypted"
+/>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="font-extralight text-base md:text-4xl dark:text-neutral-200 py-4">
+        
+       </div>
+       <Link href="/dashboard"><button id="btn" className={`${orbit.className}`}>LET'S GO </button></Link>
+
+
+             </motion.div>
+ 
+  
+<div style={{height: '500px', position: 'relative'}} id="Scanim">
+
+    <div id="cont" style={{position:"relative",zIndex:"15"}}>
+    <FadeContent blur={true} duration={4000} easing="ease-out" initialOpacity={0} >
+<span id="bulb_span"><i id="bulb"className="fa-regular fa-lightbulb"></i><i  id="clock"className="fa-regular fa-clock"></i><i className="fa-solid fa-bolt" id="thunder"></i><i className="fa-solid fa-envelope"id="message"></i></span>
+
+</FadeContent>
+<div id="advtext" >
+<FadeContent blur={true} duration={4000} easing="ease-out" initialOpacity={5} >
+<span id="text1"className={`${orbit.className}`}>    <ShinyText text="Smart solution" disabled={false} speed={6} className='custom-class' /><br /> <ShinyText text="for" disabled={false} speed={6} className='custom-class' /> smart peeps</span>
+<span id="text2"className={`${orbit.className}`}>Time saving</span>
+<span id="text3"className={`${orbit.className}`}>Boost Productivity</span>
+<span id="text4"className={`${orbit.className}`}>Seamless Gmail <br /><span id="text4child">Integration</span></span>
+</FadeContent>
+</div>
+
+
     </div>
+
+
+  <div id="downimg">
+  <InfiniteScroll
+    items={items}
+    isTilted={true}
+    tiltDirection='left'
+    autoplay={true}
+    autoplaySpeed={2.0}
+    autoplayDirection="down"
+    pauseOnHover={true}
+  /></div>
+  <div>
+    <div id="upimg"><InfiniteScroll 
+    items={items}
+    isTilted={true}
+    tiltDirection='left'
+    autoplay={true}
+    autoplaySpeed={2.0}
+    autoplayDirection="up"
+    pauseOnHover={true}
+  /></div>
+
+
+  <div>
+ 
+  </div>
+  </div>
+</div>
+<div id="QNA_cont">
+  <div className={`text-3xl md:text-7xl font-bold ${orbit.className}`} style={{color:"white"}} id="shiny-text"
+  >
+    <ShinyText text="Why &nbsp;NIYOJAKA " disabled={false} speed={6} className='custom-class' /> ?
+  
+  </div>
+
+  <span id="reason" ><ShinyText text="Join thousands of busy professionals who are already saving time with our AI auto-replier. Sign up now and take control of your inbox!" disabled={false} speed={6} className='custom-class' /></span>
+</div>
+<div id="fsDemo" className={`${orbit.className}`}>
+    <FeaturesSectionDemo />
+
+</div>
+<div className="bgblue">
+  <div id="logo_cont">
+  <span id="logo" className={`text-3xl md:text-7xl font-bold dark:text-white text-center ${orbit.className}`}>NIYOJAKA</span>
+  <hr  id ="line"style={{color:"white"}} />
+  <span id="bhaukal">NIYOJAKA | Your very own mail organizer</span> 
+  <div id ="socials">
+    <span id="socioic"><i className="fa-brands fa-twitter"></i></span>
+    <span id="socioic"><i className="fa-brands fa-x-twitter"></i></span>
+    <span id="socioic"><i className="fa-brands fa-linkedin-in"></i></span>
+    <div id="declarations">2025 NIYOJAKA. All rights reserved.</div>
+  </div>
+  </div>
+
+</div>
+
+
+
+    </AuroraBackground>
+    
   );
 }

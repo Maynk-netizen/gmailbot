@@ -1,0 +1,19 @@
+
+.infinite-scroll-container{
+    /* border:1px solid grey; */
+height: 58rem;
+overflow: hidden;
+position: relative;
+top: -5.5rem;
+opacity: 0.3!important;
+scale: 130%;
+
+}
+.infinite-scroll-item{
+    /* border:2px solid red; */
+   /* padding-top: 1px;
+   padding-bottom: 1px; */
+   /* overflow: hidden; */
+   border-radius: 15px;
+   height: 8rem!important;
+}

@@ -1,0 +1,267 @@
+body{
+    overflow-y: scroll ;
+    overflow-x: hidden;
+}
+#aura{
+    height: 200rem;
+}
+#aura2{
+    position: relative;
+    top:-2rem;
+}
+#Scanim{
+    top: 11rem;
+    width: 79rem;
+    overflow: hidden;
+    background-color:rgb(0,0,0,0.5);
+    height: 25rem!important;
+/* background-color: rgb(255,255,255); */
+}
+#bullets{
+    position: relative;
+    left: 40rem;
+    width: 30rem;
+    top: -25rem;
+    color: rgb(227,218,204);
+    -webkit-text-stroke: 0.5px black !important;
+    
+
+}
+#upimg{
+    position: relative;
+    top: -73rem;
+    left: 55rem;
+
+}
+#downimg{
+    position: relative;
+    left: 9rem;
+    top: -10rem;
+
+}
+
+#span2h1, #span2h2{
+    position: relative;
+    left: 24rem;
+    top: -29rem;
+    scale: 50% !important;
+    font-size: 30px;
+    -webkit-text-stroke: 1px black;
+   
+
+}
+
+#btn {
+    --color: #000000;
+    --color2: #ffffff;
+    padding: 0.8em 1.75em;
+    background-color: #ffffff;
+    border-radius: 6px;
+    border: 0.3px solid var(--color);
+    transition: 4s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    font-weight: 300;
+    font-size: 17px;
+    /* font-family: cursive; */
+    text-transform: uppercase;
+    color: var(--color);
+  }
+  
+  #btn::after,
+  #btn::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: skew(90deg) translate(-50%, -50%);
+    position: absolute;
+    inset: 50%;
+    left: 25%;
+    z-index: -1;
+    transition: 0.5s ease-out;
+    background-color: var(--color);
+  }
+  
+  #btn::before {
+    top: -50%;
+    left: -25%;
+    transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover::before {
+    transform: skew(45deg) rotate(180deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover::after {
+    transform: skew(45deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover {
+    color: var(--color2);
+  }
+  
+  #btn:active {
+    filter: brightness(0.7);
+    transform: scale(0.98);
+  }
+  
+  
+  
+   #cont{
+    /* border:12px solid yellow; */
+    top:5rem;
+   }
+/* #bulb{
+font-size: 100px;
+color:white;
+    position: relative;
+    left:5rem
+} */
+#bulb {
+    font-size: 100px;
+    background: linear-gradient(45deg, #555555, #949494, #969393, white, #8f8f8f);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s infinite linear;
+    position: relative;
+    left: 5rem;
+}
+
+/* Optional shiny animation */
+@keyframes shine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+#bulb_span{
+    font-size: 100px;
+color:white;
+}#thunder{
+    position: relative;
+    left:35rem;
+    font-size: 100px;
+    background: linear-gradient(45deg, #cecdcd, #949494, #969393, white, #8f8f8f);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 10s infinite linear;
+    position: relative;
+    /* left: 5rem; */
+}#message{
+    position: relative;
+    left:50rem;
+    font-size: 100px;
+    background: linear-gradient(45deg, #555555, #949494, #969393, white, #8f8f8f);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 10s infinite linear;
+    position: relative;
+}
+#clock{
+    position: relative;
+    left: 20rem;
+    font-size: 100px;
+    background: linear-gradient(45deg, #cecdcd, #949494, #969393, white, #8f8f8f);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 13s infinite linear;
+    position: relative;
+}#advtext{
+    color: white;
+    scale: 140%;
+    position: relative;
+    top:2rem;
+    left: 10rem;
+    width: 64rem;
+    /* border:2px solid white; */
+    overflow:hidden;
+}#text1{
+    position: relative;
+    left: 3rem;
+}
+#text2{
+position: relative;
+left: 9.5rem;
+top:-1rem;
+}#text3{
+    position: relative;
+    left: 16.5rem;
+    top:-1rem;
+
+}#text4{
+    position: relative;
+    left: 21.5rem;
+    top:-1rem;
+}
+#text4child{
+    position: relative;
+
+    right: -27rem;
+}
+#shiny-text{
+    font-size: 45px;
+    position: relative;
+    top:-37rem;
+    left: 15rem;
+}
+#reason{
+    position: relative;
+    top: -35rem;
+}
+#fsDemo{
+    position: relative;
+    top:15rem;
+    scale: 105%;
+    width: 70rem;
+}
+#QNA_cont{
+    position: relative;
+    top: 55rem!important;
+}
+/* From Uiverse.io by Spacious74 */ 
+.bgblue {
+    /* border: 2px solid red; */
+    position: relative;
+  
+    width: 100%;
+    top: 13rem;
+    height: 8rem;
+    border-top:1px solid white;
+    /* padding-bottom: -10rem; */
+}
+#line{
+    width: 26.5rem;
+}
+#logo_cont{
+    scale: 70%;
+    position: relative;
+    left: -8rem;
+    top:1rem;
+}#bhaukal{
+    color: white;
+font-size: 24px;
+}
+#socials{
+    color: white;
+    position: relative;
+    right: -85rem;
+    top: -6.5rem;
+    font-size: 40px;
+    /* border: 2px solid red; */
+    padding: 0px 0px 0px 0px!important;
+}
+#socioic{
+padding: 30px 30px 30px 30px!important;
+}
+#declarations{
+    font-size: 16px;
+    position: relative;
+    top: 1rem;
+    right: -2rem;
+}
