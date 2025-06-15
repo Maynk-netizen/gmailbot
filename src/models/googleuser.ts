@@ -39,8 +39,21 @@ const userSchema = new mongoose.Schema({
       snippet: String,
       date: Date,
       isRead: { type: Boolean, default: false }
-    }],
+    }]
+    ,
+   
     default: []
+  },
+  replies:{
+    type: [{
+      email: String,
+      messageId: String,
+      reply: String ,
+      subject: String,
+      snippet: String,
+      date: Date,
+      isRead: { type: Boolean, default: false }
+    }],   default: []
   },
   // Add new field for storing email contexts
   emailContexts: {

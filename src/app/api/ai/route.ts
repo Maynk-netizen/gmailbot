@@ -28,9 +28,9 @@ export async  function POST(request: NextRequest) {
     try {
        const reqbody = await request.json();
         const {senderemail,snippet,subject,toHeader,fromHeader} = reqbody;
-        console.log(`senderemail:${senderemail},${snippet},${subject},${toHeader.match(/<([^>]+)>/)[1]},${fromHeader}`);
-        const finaltoheader =toHeader.match(/<([^>]+)>/)[1]
-        const finthat = await GoogleUser.findOne({email:finaltoheader},{emailContexts:{$elemMatch:{targetEmail:senderemail}}},);
+        console.log(`senderemail:${senderemail},snippet:${snippet},subject:${subject},toheader:${toHeader},fromheader:${fromHeader.match(/^(.*?)\s*</)[1]}`);
+        
+        const finthat = await GoogleUser.findOne({email:toHeader},{emailContexts:{$elemMatch:{targetEmail:senderemail}}},);
         if(!finthat){
             return NextResponse.json({
                 message:"no user found"
@@ -41,7 +41,7 @@ export async  function POST(request: NextRequest) {
         
         try {
             const res = await chain.call({
-          context:`you are a email reply generator who acts like the receiver and replies to the mails,${usrcontext}`,
+          context:`you are a email reply generator who acts like the receiver and replies to the mails,${usrcontext},do not include subject or subject :Re in your responses`,
           question:`from:${fromHeader},subject:${subject},email:${snippet}`
       })
       await sendEmail({
@@ -50,6 +50,35 @@ export async  function POST(request: NextRequest) {
         reply:res.text
       })
       console.log(res);
+    
+      const updateReply = await GoogleUser.updateOne(
+        {
+          email: toHeader,
+        },
+        {
+          $push: {
+            replies: {
+              email: senderemail,
+              subject: subject || '',
+              snippet: snippet || '',
+              reply: res.text,
+              date: new Date(),
+              isRead: false
+            }
+          }
+        }
+      );
+      
+      console.log("Updated:", updateReply);
+      
+    if(!updateReply){
+        console.log("error in updating reply");
+
+        return NextResponse.json({
+            message:"error in updating reply"
+        })
+    }
+      console.log(updateReply);
       return NextResponse.json({
         message:"success",
         data:res
