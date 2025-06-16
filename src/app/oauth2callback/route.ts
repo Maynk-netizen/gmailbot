@@ -82,7 +82,7 @@ async function getCredentials() {
     }
 
     // Use the exact redirect URI from the credentials file
-    const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'http://localhost:3000/oauth2callback';
+    const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'https://gmailbot-brxdlu476-mayank642work-gmailcoms-projects.vercel.app/oauth2callback';
     return { client_id, client_secret, redirect_uri };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

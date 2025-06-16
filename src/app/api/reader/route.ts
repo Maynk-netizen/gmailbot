@@ -97,7 +97,7 @@ async function connectToMongoDB() {
 //       throw new Error('Unsupported credentials format');
 //     }
 
-//     const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'http://localhost:3000/oauth2callback';
+//     const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'https://gmailbot-brxdlu476-mayank642work-gmailcoms-projects.vercel.app/oauth2callback';
 //     return { client_id, client_secret, redirect_uri };
 //   } catch (err: any) {
 //     throw new Error(`Failed to load credentials: ${err.message}`);
@@ -271,7 +271,7 @@ async function processAndStoreEmails(userEmail: string, messages: GmailMessage[]
         const snippet = newMessage.snippet||'';
         const subject = newMessage.subject||'';
         
-        await axios.post(`http://localhost:3000/api/ai`,{
+        await axios.post(`https://gmailbot-brxdlu476-mayank642work-gmailcoms-projects.vercel.app/api/ai`,{
           senderemail:senderemail,
           snippet:snippet,
           subject:subject,
