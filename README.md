@@ -14,7 +14,7 @@ pnpm dev
 bun dev
 ```
 
-Open [https://gmailbot-2um24om8q-mayank642work-gmailcoms-projects.vercel.app](https://gmailbot-2um24om8q-mayank642work-gmailcoms-projects.vercel.app) with your browser to see the result.
+Open [https://gmailbot-dun.vercel.app/](https://gmailbot-dun.vercel.app/) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
