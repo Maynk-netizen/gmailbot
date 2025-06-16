@@ -3,6 +3,28 @@ import jwt from 'jsonwebtoken';
 import GoogleUser from "@/models/googleuser";
 import { connectDB } from '@/helpers/db';
 
+// Define types
+interface JwtPayload {
+  id: string;
+  email: string;
+  username: string;
+}
+
+interface Reply {
+  email: string;
+  messageId: string;
+  reply: string;
+  subject: string;
+  snippet: string;
+  date: Date;
+  isRead: boolean;
+}
+
+interface GoogleUserDocument {
+  replies: Reply[];
+}
+
+// GET endpoint to fetch replies
 export async function GET(request: NextRequest) {
   try {
     // Connect to database
@@ -19,11 +41,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify and decode the token
-    const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     const userId = decodedToken.id;
 
     // Find the user and get their replies
-    const user = await GoogleUser.findById(userId).select('replies');
+    const user = await GoogleUser.findById(userId).select('replies') as GoogleUserDocument | null;
 
     if (!user) {
       return NextResponse.json(
@@ -33,7 +55,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Sort replies by date (newest first)
-    const sortedReplies = user.replies.sort((a: any, b: any) => 
+    const sortedReplies = user.replies.sort((a: Reply, b: Reply) => 
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
@@ -42,10 +64,10 @@ export async function GET(request: NextRequest) {
       replies: sortedReplies
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error fetching replies:', error);
     
-    if (error.name === 'JsonWebTokenError') {
+    if (error instanceof Error && error.name === 'JsonWebTokenError') {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401 }
@@ -59,7 +81,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Optional: POST method to add new replies (for when AI generates a new reply)
+// POST endpoint to add new replies
 export async function POST(request: NextRequest) {
   try {
     // Connect to database
@@ -76,7 +98,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify and decode the token
-    const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     const userId = decodedToken.id;
 
     // Get the reply data from request body
@@ -92,7 +114,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new reply object
-    const newReply = {
+    const newReply: Reply = {
       email,
       messageId,
       reply,
@@ -124,10 +146,10 @@ export async function POST(request: NextRequest) {
       reply: newReply
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error adding reply:', error);
     
-    if (error.name === 'JsonWebTokenError') {
+    if (error instanceof Error && error.name === 'JsonWebTokenError') {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401 }

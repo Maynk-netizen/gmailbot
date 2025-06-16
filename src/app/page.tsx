@@ -1,6 +1,6 @@
 "use client";
 
-import { color, motion } from "motion/react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import './page.css'
 import React from "react";

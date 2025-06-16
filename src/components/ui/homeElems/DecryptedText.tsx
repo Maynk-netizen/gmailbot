@@ -13,7 +13,7 @@ interface DecryptedTextProps {
     encryptedClassName?: string
     parentClassName?: string
     animateOn?: 'view' | 'hover'
-    [key: string]: any
+    [key: string]: string | number | boolean | undefined
 }
 
 export default function DecryptedText({
@@ -38,7 +38,7 @@ export default function DecryptedText({
     const containerRef = useRef<HTMLSpanElement>(null)
 
     useEffect(() => {
-        let interval: number
+        let interval: NodeJS.Timeout
         let currentIteration = 0
 
         const getNextIndex = (revealedSet: Set<number>): number => {

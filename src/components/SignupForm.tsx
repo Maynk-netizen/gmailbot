@@ -1,15 +1,12 @@
 "use client";
 import React from "react";
 import Link from "next/link"
-import { useRouter } from "next/navigation"; 
+
 import {toast} from "react-hot-toast"
 import { cn } from "./lib/utils";
-import {
-  IconBrandGoogle,
-} from "@tabler/icons-react";
 
 export function SignupFormDemo() {
-  const router = useRouter();
+
   
   // Handle Google Sign In
   const handleGoogleSignIn = async () => {
@@ -67,16 +64,4 @@ const BottomGradient = () => {
   );
 };
 
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
+

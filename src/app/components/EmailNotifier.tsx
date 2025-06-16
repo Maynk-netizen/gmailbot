@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -10,9 +8,29 @@ import { usePathname } from 'next/navigation';
 const TARGET_EMAIL = ['mayankmishra11d@gmail.com', 'valueplusmohanlalganj@gmail.com'];
 const POLLING_INTERVAL = 30000; // Poll every 30 seconds
 
+interface EmailHeader {
+  name: string;
+  value: string;
+}
+
+interface EmailPayload {
+  headers?: EmailHeader[];
+}
+
+interface EmailMessage {
+  id?: string;
+  snippet?: string;
+  payload?: EmailPayload;
+}
+
+interface EmailResponse {
+  message?: EmailMessage;
+  watchSetup?: boolean;
+  authUrl?: string;
+}
+
 export default function EmailNotifier() {
   const [isSetup, setIsSetup] = useState(false);
-  const [processedEmailIds, setProcessedEmailIds] = useState<string[]>([]);
   const processedEmailsRef = useRef<Set<string>>(new Set());
   const pathname = usePathname();
   const isDashboardPage = pathname === '/dashboard';
@@ -20,22 +38,21 @@ export default function EmailNotifier() {
   useEffect(() => {
     if (!isDashboardPage) return;
 
-    const handleEmailResponse = (data: any) => {
+    const handleEmailResponse = (data: EmailResponse) => {
       const newEmailId = data.message?.id;
 
       // Skip if no new email or already processed
       if (!newEmailId || processedEmailsRef.current.has(newEmailId)) return;
 
       processedEmailsRef.current.add(newEmailId);
-      setProcessedEmailIds([...processedEmailsRef.current]);
 
-      const fromEmail = data.message.payload?.headers?.find(
-        (header: any) => header.name === 'From'
+      const fromEmail = data.message?.payload?.headers?.find(
+        (header: EmailHeader) => header.name === 'From'
       )?.value || '';
 
       if (TARGET_EMAIL.some(email => fromEmail.toLowerCase().includes(email.toLowerCase()))) {
-        console.log(`New email from ${fromEmail}: ${data.message.snippet}`);
-        toast.info(`New email from ${fromEmail}: ${data.message.snippet}`);
+        console.log(`New email from ${fromEmail}: ${data.message?.snippet}`);
+        toast.info(`New email from ${fromEmail}: ${data.message?.snippet}`);
       }
     };
 
@@ -45,7 +62,7 @@ export default function EmailNotifier() {
           method: 'POST',
         });
 
-        const data = await response.json();
+        const data: EmailResponse = await response.json();
 
         if (response.status === 401 && data.authUrl) {
           window.location.href = data.authUrl;
@@ -58,16 +75,15 @@ export default function EmailNotifier() {
 
           if (data.message?.id) {
             processedEmailsRef.current.add(data.message.id);
-            setProcessedEmailIds([...processedEmailsRef.current]);
           }
 
-          const fromEmail = data.message.payload?.headers?.find(
-            (header: any) => header.name === 'From'
+          const fromEmail = data.message?.payload?.headers?.find(
+            (header: EmailHeader) => header.name === 'From'
           )?.value || '';
 
           if (TARGET_EMAIL.some(email => fromEmail.toLowerCase().includes(email.toLowerCase()))) {
-            console.log(`Initial email from ${fromEmail}: ${data.message.snippet}`);
-            toast.info(`New email from ${fromEmail}: ${data.message.snippet}`);
+            console.log(`Initial email from ${fromEmail}: ${data.message?.snippet}`);
+            toast.info(`New email from ${fromEmail}: ${data.message?.snippet}`);
           }
         } else {
           // Always check for new messages even if watchSetup was already done

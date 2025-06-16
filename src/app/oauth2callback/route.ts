@@ -4,6 +4,11 @@ import path from 'path';
 import process from 'process';
 import { google } from 'googleapis';
 import { MongoClient } from 'mongodb';
+import { cookies } from 'next/headers';
+import { OAuth2Client } from 'google-auth-library';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../api/auth/[...nextauth]/route';
+import { prisma } from '@/lib/prisma';
 
 // Update the SCOPES array to include the userinfo.email scope
 const SCOPES = [
@@ -36,6 +41,23 @@ interface TokenData {
   };
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface TokenResponse {
+  tokens: {
+    access_token: string;
+    refresh_token: string;
+    scope: string;
+    token_type: string;
+    expiry_date: number;
+    id_token?: string;
+  };
+}
+
+interface UserProfile {
+  email: string;
+  name: string;
+  picture?: string;
 }
 
 // Connect to MongoDB
@@ -79,202 +101,106 @@ async function createOAuth2Client() {
 }
 
 // GET endpoint to handle OAuth callback
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const url = new URL(request.url);
-    const code = url.searchParams.get('code');
-    const error = url.searchParams.get('error');
-
-    // Check if there's an error in the callback
-    if (error) {
-      console.error('OAuth error:', error);
-      return NextResponse.json({ error: `Authentication error: ${error}` }, { status: 400 });
-    }
+    const { searchParams } = new URL(request.url);
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
 
     if (!code) {
-      return NextResponse.json({ error: 'No authorization code provided' }, { status: 400 });
+      return NextResponse.redirect('/login?error=NoCodeProvided');
     }
 
-    const auth = await createOAuth2Client();
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI
+    );
 
-    // Exchange the authorization code for tokens
-    try {
-      const { tokens } = await auth.getToken(code);
-      auth.setCredentials(tokens);
-      
-      // Extract email directly from the ID token if available
-      let userEmail = 'unknown@example.com';
-      
-      if (tokens.id_token) {
-        try {
-          // Decode the ID token to get user info
-          const ticket = await auth.verifyIdToken({
-            idToken: tokens.id_token,
-            audience: (await getCredentials()).client_id,
-          });
-          const payload = ticket.getPayload();
-          if (payload && payload.email) {
-            userEmail = payload.email;
-            console.log('Email extracted from ID token:', userEmail);
-          }
-        } catch (idTokenError) {
-          console.error('Error decoding ID token:', idTokenError);
-        }
-      }
-      
-      // If we couldn't get the email from the ID token, try the Gmail API
-      if (userEmail === 'unknown@example.com') {
-        try {
-          const gmail = google.gmail({ version: 'v1', auth });
-          const profile = await gmail.users.getProfile({ userId: 'me' });
-          if (profile.data.emailAddress) {
-            userEmail = profile.data.emailAddress;
-            console.log('Email extracted from Gmail API:', userEmail);
-          }
-        } catch (gmailError) {
-          console.error('Error fetching email from Gmail API:', gmailError);
-        }
-      }
-      
-      // Save the tokens to MongoDB
-      const { client_id, client_secret, redirect_uri } = await getCredentials();
-      
-      // Ensure tokens match the expected type
-      const tokenData: TokenData = {
-        userId: 'default',
-        email: userEmail,
-        client_id,
-        client_secret,
-        redirect_uri,
-        tokens: {
-          access_token: tokens.access_token || '',
-          refresh_token: tokens.refresh_token || undefined,
-          scope: tokens.scope || '',
-          token_type: tokens.token_type || 'Bearer',
-          expiry_date: tokens.expiry_date || Date.now() + 3600000,
-        },
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+    const { tokens } = await oauth2Client.getToken(code) as TokenResponse;
+    oauth2Client.setCredentials(tokens);
 
-      // Connect to MongoDB and save the token
-      const db = await connectToMongoDB();
-      const tokensCollection = db.collection(TOKENS_COLLECTION);
-      
-      // Update if exists, insert if not - now using email as the identifier
-      await tokensCollection.updateOne(
-        { email: userEmail },
-        { $set: tokenData },
-        { upsert: true }
-      );
+    const oauth2 = google.oauth2({
+      auth: oauth2Client,
+      version: 'v2'
+    });
 
-      // Return a success page with the email displayed
-      return new NextResponse(
-        `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Authentication Successful</title>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                margin-top: 50px;
-              }
-              .success {
-                color: green;
-                font-size: 24px;
-                margin-bottom: 20px;
-              }
-              .message {
-                margin-bottom: 30px;
-              }
-              .email {
-                font-weight: bold;
-                color: #4285f4;
-              }
-              .button {
-                background-color: #4285f4;
-                color: white;
-                padding: 10px 20px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 16px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="success">✓ Authentication Successful</div>
-            <div class="message">You have successfully authenticated with Google.</div>
-            <div class="message">Account: <span class="email">${userEmail}</span></div>
-            <div class="message">Your tokens have been saved to the database.</div>
-          <a href ="http://localhost:3000/dashboard"><button class="button">Back to dashboard</button></a>
-          </body>
-        </html>
-        `,
-        {
-          headers: {
-            'Content-Type': 'text/html',
-          },
+    const { data: userInfo } = await oauth2.userinfo.get() as { data: UserProfile };
+
+    let userEmail = userInfo.email;
+
+    if (!userEmail && tokens.id_token) {
+      try {
+        const ticket = await oauth2Client.verifyIdToken({
+          idToken: tokens.id_token,
+          audience: process.env.GOOGLE_CLIENT_ID
+        });
+        const payload = ticket.getPayload();
+        if (payload?.email) {
+          userEmail = payload.email;
         }
-      );
-    } catch (tokenError: any) {
-      console.error('Token exchange error:', tokenError);
-      
-      // Handle invalid_grant error specifically
-      if (tokenError.message && tokenError.message.includes('invalid_grant')) {
-        return new NextResponse(
-          `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <title>Authentication Error</title>
-              <style>
-                body {
-                  font-family: Arial, sans-serif;
-                  text-align: center;
-                  margin-top: 50px;
-                }
-                .error {
-                  color: red;
-                  font-size: 24px;
-                  margin-bottom: 20px;
-                }
-                .message {
-                  margin-bottom: 30px;
-                }
-                .button {
-                  background-color: #4285f4;
-                  color: white;
-                  padding: 10px 20px;
-                  border: none;
-                  border-radius: 4px;
-                  cursor: pointer;
-                  font-size: 16px;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="error">⚠️ Authentication Error</div>
-              <div class="message">The authorization code has expired or already been used.</div>
-              <div class="message">Please try authenticating again.</div>
-              <button class="button" onclick="window.close()">Close Window</button>
-            </body>
-          </html>
-          `,
-          {
-            headers: {
-              'Content-Type': 'text/html',
-            },
-          }
-        );
+      } catch (error) {
+        console.error('Error verifying ID token:', error);
       }
-      
-      return NextResponse.json({ error: tokenError.message }, { status: 500 });
     }
+
+    if (!userEmail) {
+      try {
+        const gmail = google.gmail({
+          version: 'v1',
+          auth: oauth2Client
+        });
+        const response = await gmail.users.getProfile({
+          userId: 'me'
+        });
+        if (response.data.emailAddress) {
+          userEmail = response.data.emailAddress;
+        }
+      } catch (error) {
+        console.error('Error getting Gmail profile:', error);
+      }
+    }
+
+    if (!userEmail) {
+      return NextResponse.redirect('/login?error=NoEmailFound');
+    }
+
+    // Save the tokens to MongoDB
+    const { client_id, client_secret, redirect_uri } = await getCredentials();
+    
+    // Ensure tokens match the expected type
+    const tokenData: TokenData = {
+      userId: 'default',
+      email: userEmail,
+      client_id,
+      client_secret,
+      redirect_uri,
+      tokens: {
+        access_token: tokens.access_token || '',
+        refresh_token: tokens.refresh_token || undefined,
+        scope: tokens.scope || '',
+        token_type: tokens.token_type || 'Bearer',
+        expiry_date: tokens.expiry_date || Date.now() + 3600000,
+      },
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Connect to MongoDB and save the token
+    const db = await connectToMongoDB();
+    const tokensCollection = db.collection(TOKENS_COLLECTION);
+    
+    // Update if exists, insert if not - now using email as the identifier
+    await tokensCollection.updateOne(
+      { email: userEmail },
+      { $set: tokenData },
+      { upsert: true }
+    );
+
+    // Return a success page with the email displayed
+    return NextResponse.redirect('/dashboard');
   } catch (error: any) {
-    console.error('Auth callback failed:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('OAuth callback error:', error);
+    return NextResponse.redirect('/login?error=AuthenticationFailed');
   }
 }

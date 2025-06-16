@@ -84,7 +84,7 @@ export async  function POST(request: NextRequest) {
         data:res
       })
       } catch (error) {
-          console.log("error in nested ai route");
+          console.log("error in nested ai route" ,error);
           return NextResponse.json({
             message:"error in nested ai route"
         })

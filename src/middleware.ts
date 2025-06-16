@@ -26,6 +26,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     } catch (error) {
       // If token is invalid, continue to public path
+      console.log(error);
       return NextResponse.next();
     }
   }

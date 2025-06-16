@@ -1,12 +1,14 @@
-
-import { NextRequest, NextResponse } from "next/server";
-
+import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export const sendEmail = async ({ email,subject,reply}: any) => {
-    try {
-      
+interface EmailParams {
+    email: string;
+    subject: string;
+    reply: string;
+}
 
+export const sendEmail = async ({ email, subject, reply }: EmailParams) => {
+    try {
         // Configure Gmail transporter
         const transport = nodemailer.createTransport({
             service: "gmail",
@@ -24,7 +26,7 @@ export const sendEmail = async ({ email,subject,reply}: any) => {
         };
 
         const mailResponse = await transport.sendMail(mailOptions);
-        console.log(mailResponse)
+        console.log(mailResponse);
 
         return mailResponse;
     } catch (error) {

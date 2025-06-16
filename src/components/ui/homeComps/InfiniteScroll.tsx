@@ -120,7 +120,11 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
       rafId = requestAnimationFrame(tick);
 
       if (pauseOnHover) {
-        const stopTicker = () => rafId && cancelAnimationFrame(rafId);
+        const stopTicker = () => {
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+          }
+        };
         const startTicker = () => {
           rafId = requestAnimationFrame(tick);
         };
@@ -137,14 +141,18 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
       } else {
         return () => {
           observer.kill();
-          rafId && cancelAnimationFrame(rafId);
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+          }
         };
       }
     }
 
     return () => {
       observer.kill();
-      if (rafId) cancelAnimationFrame(rafId);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, [
     items,

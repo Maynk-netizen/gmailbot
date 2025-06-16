@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/helpers/db";

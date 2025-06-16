@@ -1,5 +1,3 @@
-
-
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from '@/helpers/db';
 import GoogleUser from '@/models/googleuser';
@@ -9,6 +7,8 @@ import { MongoClient } from 'mongodb';
 import path from 'path';
 import { promises as fs } from 'fs';
 import axios from 'axios';
+import { Document, Model } from 'mongoose';
+
 // MongoDB connection for OAuth tokens
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const DB_NAME = 'gmail_bot';
@@ -30,6 +30,40 @@ interface TokenData {
   };
 }
 
+interface GmailMessage {
+  id?: string;
+  threadId?: string;
+  labelIds?: string[];
+  snippet?: string;
+  payload?: {
+    headers?: Array<{
+      name: string;
+      value: string;
+    }>;
+  };
+}
+
+interface TargetEmailMessage {
+  email: string;
+  messageId: string;
+  subject: string;
+  snippet: string;
+  date: Date;
+  isRead: boolean;
+  threadId: string;
+  labelIds: string[];
+  fromHeader: string;
+  toHeader: string;
+}
+
+interface IGoogleUser {
+  email: string;
+  targetEmails: string[];
+  targetEmailMessages: TargetEmailMessage[];
+}
+
+interface GoogleUserDocument extends Document, IGoogleUser {}
+
 // Connect to MongoDB for OAuth tokens
 async function connectToMongoDB() {
   const client = new MongoClient(MONGODB_URI);
@@ -38,30 +72,30 @@ async function connectToMongoDB() {
 }
 
 // Load credentials from credentials.json
-async function getCredentials() {
-  try {
-    const content = await fs.readFile(CREDENTIALS_PATH, 'utf-8');
-    const credentials = JSON.parse(content);
-    let client_id, client_secret, redirect_uris;
+// async function getCredentials() {
+//   try {
+//     const content = await fs.readFile(CREDENTIALS_PATH, 'utf-8');
+//     const credentials = JSON.parse(content);
+//     let client_id, client_secret, redirect_uris;
 
-    if (credentials.installed) {
-      client_id = credentials.installed.client_id;
-      client_secret = credentials.installed.client_secret;
-      redirect_uris = credentials.installed.redirect_uris;
-    } else if (credentials.web) {
-      client_id = credentials.web.client_id;
-      client_secret = credentials.web.client_secret;
-      redirect_uris = credentials.web.redirect_uris;
-    } else {
-      throw new Error('Unsupported credentials format');
-    }
+//     if (credentials.installed) {
+//       client_id = credentials.installed.client_id;
+//       client_secret = credentials.installed.client_secret;
+//       redirect_uris = credentials.installed.redirect_uris;
+//     } else if (credentials.web) {
+//       client_id = credentials.web.client_id;
+//       client_secret = credentials.web.client_secret;
+//       redirect_uris = credentials.web.redirect_uris;
+//     } else {
+//       throw new Error('Unsupported credentials format');
+//     }
 
-    const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'http://localhost:3000/oauth2callback';
-    return { client_id, client_secret, redirect_uri };
-  } catch (err: any) {
-    throw new Error(`Failed to load credentials: ${err.message}`);
-  }
-}
+//     const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'http://localhost:3000/oauth2callback';
+//     return { client_id, client_secret, redirect_uri };
+//   } catch (err: any) {
+//     throw new Error(`Failed to load credentials: ${err.message}`);
+//   }
+// }
 
 // Load OAuth2 client for the authenticated user
 async function loadUserOAuth2Client(userEmail: string) {
@@ -105,7 +139,7 @@ async function getAuthenticatedUser(request: NextRequest) {
 }
 
 // Fetch emails from Gmail API
-async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: number = 50) {
+async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: number = 50): Promise<GmailMessage[]> {
   const gmail = google.gmail({ version: 'v1', auth });
   
   try {
@@ -139,7 +173,7 @@ async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: n
       })
     );
 
-    return messages.filter(message => message !== null);
+    return messages.filter(message => message !== null) as GmailMessage[];
   } catch (error) {
     console.error('Error fetching emails from Gmail:', error);
     throw error;
@@ -166,10 +200,10 @@ function extractEmailFromHeader(headerValue: string): string {
 }
 
 // Process and store emails from target addresses
-async function processAndStoreEmails(userEmail: string, messages: any[], targetEmails: string[]) {
+async function processAndStoreEmails(userEmail: string, messages: GmailMessage[], targetEmails: string[]) {
   try {
     await connectDB();
-    const user = await GoogleUser.findOne({ email: userEmail });
+    const user = await GoogleUser.findOne({ email: userEmail }) as GoogleUserDocument;
     
     if (!user) {
       throw new Error('User not found in database');
@@ -179,7 +213,7 @@ async function processAndStoreEmails(userEmail: string, messages: any[], targetE
     const targetEmailsLower = targetEmails.map(email => email.toLowerCase());
 
     for (const message of messages) {
-      if (!message || !message.payload) continue;
+      if (!message || !message.payload || !message.id) continue;
 
       // Extract email headers
       const headers = message.payload.headers || [];
@@ -197,7 +231,7 @@ async function processAndStoreEmails(userEmail: string, messages: any[], targetE
 
       // Check if message already exists
       const messageExists = user.targetEmailMessages?.some(
-        (msg: any) => msg.messageId === message.id
+        (msg: TargetEmailMessage) => msg.messageId === message.id
       );
 
       if (!messageExists) {
@@ -211,7 +245,7 @@ async function processAndStoreEmails(userEmail: string, messages: any[], targetE
         }
 
         // Add new message
-        const newMessage = {
+        const newMessage: TargetEmailMessage = {
           email: senderEmail,
           messageId: message.id,
           subject: subjectHeader,
@@ -236,8 +270,7 @@ async function processAndStoreEmails(userEmail: string, messages: any[], targetE
           subject:subject,
           toHeader:toHeader,
           fromHeader: fromHeader,
-
-        })
+        });
       }
     }
 
@@ -266,7 +299,7 @@ export async function POST(request: NextRequest) {
 
     // Connect to main database and get user
     await connectDB();
-    const user = await GoogleUser.findOne({ email: authenticatedUser.email });
+    const user = await GoogleUser.findOne({ email: authenticatedUser.email }) as GoogleUserDocument;
     
     if (!user) {
       return NextResponse.json(
@@ -299,9 +332,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body for optional parameters
-    const body = await request.json().catch(() => ({}));
     const maxResults = 1;
-    const daysBack =  1;
+    const daysBack = 1;
 
     // Create query to fetch emails from target addresses within date range
     const targetEmailsQuery = user.targetEmails
@@ -376,7 +408,7 @@ export async function GET(request: NextRequest) {
     
     // Connect to database
     await connectDB();
-    const user = await GoogleUser.findOne({ email: authenticatedUser.email });
+    const user = await GoogleUser.findOne({ email: authenticatedUser.email }) as GoogleUserDocument;
     
     if (!user) {
       return NextResponse.json(
@@ -397,17 +429,19 @@ export async function GET(request: NextRequest) {
     
     if (isRead !== null) {
       const readFilter = isRead === 'true';
-      filteredMessages = filteredMessages.filter((msg: any) => msg.isRead === readFilter);
+      filteredMessages = filteredMessages.filter((msg: TargetEmailMessage) => msg.isRead === readFilter);
     }
     
     if (email) {
-      filteredMessages = filteredMessages.filter((msg: any) => 
+      filteredMessages = filteredMessages.filter((msg: TargetEmailMessage) => 
         msg.email.toLowerCase().includes(email.toLowerCase())
       );
     }
 
     // Sort by date (newest first)
-    filteredMessages.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    filteredMessages.sort((a: TargetEmailMessage, b: TargetEmailMessage) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 
     // Paginate
     const startIndex = (page - 1) * limit;
@@ -459,7 +493,7 @@ export async function PUT(request: NextRequest) {
 
     // Connect to database
     await connectDB();
-    const user = await GoogleUser.findOne({ email: authenticatedUser.email });
+    const user = await GoogleUser.findOne({ email: authenticatedUser.email }) as GoogleUserDocument;
     
     if (!user) {
       return NextResponse.json(
@@ -470,7 +504,7 @@ export async function PUT(request: NextRequest) {
 
     // Find and update the message
     const messageIndex = user.targetEmailMessages.findIndex(
-      (msg: any) => msg.messageId === messageId
+      (msg: TargetEmailMessage) => msg.messageId === messageId
     );
 
     if (messageIndex === -1) {

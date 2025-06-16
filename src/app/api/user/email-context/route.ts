@@ -9,6 +9,11 @@ type EmailContext = {
   context: string;
 };
 
+// Define error type
+interface ErrorWithMessage {
+  message: string;
+}
+
 // GET endpoint to fetch email context
 export async function GET(request: NextRequest) {
   try {
@@ -34,8 +39,9 @@ export async function GET(request: NextRequest) {
     const emailContext = user.emailContexts.find((ctx: EmailContext) => ctx.targetEmail === targetEmail);
 
     return NextResponse.json({ context: emailContext?.context || '' });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -74,7 +80,8 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
