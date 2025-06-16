@@ -61,7 +61,7 @@ encryptedClassName="encrypted"
         <div className="font-extralight text-base md:text-4xl dark:text-neutral-200 py-4">
         
        </div>
-       <Link href="/dashboard"><button id="btn" className={`${orbit.className}`}>LET'S GO </button></Link>
+       <Link href="/dashboard"><button id="btn" className={`${orbit.className}`}>LET&apos;S GO </button></Link>
 
 
              </motion.div>

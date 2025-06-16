@@ -2,18 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from '@/helpers/db';
 import GoogleUser from '@/models/googleuser';
 import jwt from 'jsonwebtoken';
-import { google } from 'googleapis';
+import { google, Auth } from "googleapis";
 import { MongoClient } from 'mongodb';
 import path from 'path';
-import { promises as fs } from 'fs';
+
 import axios from 'axios';
-import { Document, Model } from 'mongoose';
+import { Document } from 'mongoose';
+import { OAuth2Client } from "googleapis-common";
+import mongoose from "mongoose";
+import { gmail_v1 } from "googleapis";
 
 // MongoDB connection for OAuth tokens
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const DB_NAME = 'gmail_bot';
 const TOKENS_COLLECTION = 'oauth_tokens';
-const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
+
 
 interface TokenData {
   userId: string;
@@ -63,6 +66,11 @@ interface IGoogleUser {
 }
 
 interface GoogleUserDocument extends Document, IGoogleUser {}
+
+interface GmailHeader {
+  name: string;
+  value: string;
+}
 
 // Connect to MongoDB for OAuth tokens
 async function connectToMongoDB() {
@@ -139,7 +147,7 @@ async function getAuthenticatedUser(request: NextRequest) {
 }
 
 // Fetch emails from Gmail API
-async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: number = 50): Promise<GmailMessage[]> {
+async function fetchEmailsFromGmail(auth: Auth.OAuth2Client, query: string = '', maxResults: number = 50): Promise<GmailMessage[]> {
   const gmail = google.gmail({ version: 'v1', auth });
   
   try {
@@ -156,7 +164,7 @@ async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: n
 
     // Fetch full message details for each message
     const messages = await Promise.all(
-      listResponse.data.messages.map(async (message) => {
+      listResponse.data.messages.map(async (message: gmail_v1.Schema$Message) => {
         if (!message.id) return null;
         
         try {
@@ -173,7 +181,7 @@ async function fetchEmailsFromGmail(auth: any, query: string = '', maxResults: n
       })
     );
 
-    return messages.filter(message => message !== null) as GmailMessage[];
+    return messages.filter((message): message is GmailMessage => message !== null);
   } catch (error) {
     console.error('Error fetching emails from Gmail:', error);
     throw error;
@@ -217,10 +225,10 @@ async function processAndStoreEmails(userEmail: string, messages: GmailMessage[]
 
       // Extract email headers
       const headers = message.payload.headers || [];
-      const fromHeader = headers.find((h: any) => h.name === 'From')?.value || '';
-      const subjectHeader = headers.find((h: any) => h.name === 'Subject')?.value || '';
-      const dateHeader = headers.find((h: any) => h.name === 'Date')?.value || '';
-      const toHeader = headers.find((h: any) => h.name === 'To')?.value || '';
+      const fromHeader = headers.find((h: GmailHeader) => h.name === 'From')?.value || '';
+      const subjectHeader = headers.find((h: GmailHeader) => h.name === 'Subject')?.value || '';
+      const dateHeader = headers.find((h: GmailHeader) => h.name === 'Date')?.value || '';
+      const toHeader = headers.find((h: GmailHeader) => h.name === 'To')?.value || '';
       // Extract sender email
       const senderEmail = extractEmailFromHeader(fromHeader);
       
@@ -369,18 +377,18 @@ export async function POST(request: NextRequest) {
       }
     }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Reply route failed:', error);
     
     // Handle specific error types
-    if (error.message.includes('No authentication token')) {
+    if (error instanceof Error && error.message.includes('No authentication token')) {
       return NextResponse.json(
         { error: 'Authentication required' },
         { status: 401 }
       );
     }
     
-    if (error.message.includes('No OAuth tokens found')) {
+    if (error instanceof Error && error.message.includes('No OAuth tokens found')) {
       return NextResponse.json(
         { 
           error: 'Gmail authentication required',
@@ -393,7 +401,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        message: error.message 
+        message: error instanceof Error ? error.message : 'An unknown error occurred'
       },
       { status: 500 }
     );
@@ -462,12 +470,12 @@ export async function GET(request: NextRequest) {
       }
     }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('GET reply route failed:', error);
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        message: error.message 
+        message: error instanceof Error ? error.message : 'An unknown error occurred'
       },
       { status: 500 }
     );
@@ -526,12 +534,12 @@ export async function PUT(request: NextRequest) {
       }
     }, { status: 200 });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('PUT reply route failed:', error);
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        message: error.message 
+        message: error instanceof Error ? error.message : 'An unknown error occurred'
       },
       { status: 500 }
     );

@@ -16,7 +16,6 @@ export default function Dashboard() {
   const [selectedTargetEmail, setSelectedTargetEmail] = useState('');
   const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [currentUser, setCurrentUser] = useState<{ 
     email: string; 
     username: string;
@@ -222,13 +221,13 @@ export default function Dashboard() {
                   />
                 </div>
               )}
-              <button onClick={() => setActiveTab('help')} className="text-gray-700 hover:text-black-600 flex items-center">
+              <button className="text-gray-700 hover:text-black-600 flex items-center">
                 <FaQuestionCircle className="mr-2" /> Help
               </button>
-              <button onClick={() => setActiveTab('switch')} className="text-gray-700 hover:text-black-600 flex items-center">
+              <button className="text-gray-700 hover:text-black-600 flex items-center">
                 <FaExchangeAlt className="mr-2" /> Switch
               </button>
-              <button onClick={() => setActiveTab('about')} className="text-gray-700 hover:text-black-600 flex items-center">
+              <button className="text-gray-700 hover:text-black-600 flex items-center">
                 <FaInfoCircle className="mr-2" /> About
               </button>
               <button onClick={handleLogout} className="text-red-600 hover:text-red-800 flex items-center">

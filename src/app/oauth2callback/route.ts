@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import process from 'process';
@@ -6,13 +6,13 @@ import { google } from 'googleapis';
 import { MongoClient } from 'mongodb';
 
 // Update the SCOPES array to include the userinfo.email scope
-const SCOPES = [
-  'https://mail.google.com/',
-  'https://www.googleapis.com/auth/gmail.readonly',
-  'https://www.googleapis.com/auth/pubsub', // Added Pub/Sub scope to match reader.ts
-  'https://www.googleapis.com/auth/userinfo.email', // Add this scope for email access
-  'https://www.googleapis.com/auth/userinfo.profile' // Add profile scope as well
-];
+// const SCOPES = [
+//   'https://mail.google.com/',
+//   'https://www.googleapis.com/auth/gmail.readonly',
+//   'https://www.googleapis.com/auth/pubsub', // Added Pub/Sub scope to match reader.ts
+//   'https://www.googleapis.com/auth/userinfo.email', // Add this scope for email access
+//   'https://www.googleapis.com/auth/userinfo.profile' // Add profile scope as well
+// ];
 const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 // MongoDB connection string
@@ -84,23 +84,24 @@ async function getCredentials() {
     // Use the exact redirect URI from the credentials file
     const redirect_uri = Array.isArray(redirect_uris) ? redirect_uris[0] : 'http://localhost:3000/oauth2callback';
     return { client_id, client_secret, redirect_uri };
-  } catch (err: any) {
-    throw new Error(`Failed to load credentials: ${err.message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    throw new Error(`Failed to load credentials: ${errorMessage}`);
   }
 }
 
 // Create OAuth2 client
-async function createOAuth2Client() {
-  const { client_id, client_secret, redirect_uri } = await getCredentials();
-  return new google.auth.OAuth2(client_id, client_secret, redirect_uri);
-}
+// async function createOAuth2Client() {
+//   const { client_id, client_secret, redirect_uri } = await getCredentials();
+//   return new google.auth.OAuth2(client_id, client_secret, redirect_uri);
+// }
 
 // GET endpoint to handle OAuth callback
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
-    const state = searchParams.get('state');
+    // const state = searchParams.get('state');
 
     if (!code) {
       return NextResponse.redirect('/login?error=NoCodeProvided');
@@ -194,8 +195,9 @@ export async function GET(request: Request) {
 
     // Return a success page with the email displayed
     return NextResponse.redirect('/dashboard');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OAuth callback error:', error);
-    return NextResponse.redirect('/login?error=AuthenticationFailed');
+    const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+    return NextResponse.redirect(`/login?error=${encodeURIComponent(errorMessage)}`);
   }
 }

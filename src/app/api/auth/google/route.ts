@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import {  NextResponse } from "next/server";
+
 import { OAuth2Client } from "google-auth-library";
 
 // Google OAuth configuration
@@ -14,7 +14,7 @@ const oAuth2Client = new OAuth2Client(
   REDIRECT_URI
 );
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Generate the url that will be used for the consent dialog
   const authorizeUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',

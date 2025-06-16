@@ -10,9 +10,6 @@ type EmailContext = {
 };
 
 // Define error type
-interface ErrorWithMessage {
-  message: string;
-}
 
 // GET endpoint to fetch email context
 export async function GET(request: NextRequest) {
