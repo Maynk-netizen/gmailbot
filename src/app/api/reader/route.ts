@@ -4,12 +4,11 @@ import GoogleUser from '@/models/googleuser';
 import jwt from 'jsonwebtoken';
 import { google, Auth } from "googleapis";
 import { MongoClient } from 'mongodb';
-import path from 'path';
+
 
 import axios from 'axios';
 import { Document } from 'mongoose';
-import { OAuth2Client } from "googleapis-common";
-import mongoose from "mongoose";
+
 import { gmail_v1 } from "googleapis";
 
 // MongoDB connection for OAuth tokens
