@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
-import './page.css';
+// import './page.css';
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
