@@ -9,7 +9,7 @@ import { MongoClient } from "mongodb";
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.REDIRECT_URI || "https://gmailbot-brxdlu476-mayank642work-gmailcoms-projects.vercel.app/api/auth/google/callback";
+const REDIRECT_URI = process.env.REDIRECT_URI || "https://gmailbot-2um24om8q-mayank642work-gmailcoms-projects.vercel.app/api/auth/google/callback";
 const JWT_SECRET = process.env.JWT_SECRET || "your-jwt-secret";
 
 // MongoDB connection for oauth_tokens collection
