@@ -4,11 +4,6 @@ import path from 'path';
 import process from 'process';
 import { google } from 'googleapis';
 import { MongoClient } from 'mongodb';
-import { cookies } from 'next/headers';
-import { OAuth2Client } from 'google-auth-library';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../api/auth/[...nextauth]/route';
-import { prisma } from '@/lib/prisma';
 
 // Update the SCOPES array to include the userinfo.email scope
 const SCOPES = [
