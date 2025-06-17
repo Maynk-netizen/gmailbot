@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Orbitron } from 'next/font/google';
-import { FaEnvelope, FaQuestionCircle, FaExchangeAlt, FaInfoCircle, FaSignOutAlt, FaReply, FaClock } from 'react-icons/fa';
+import { FaEnvelope, FaSignOutAlt, FaReply, FaClock } from 'react-icons/fa';
 import './page.css';
 
 const orbitron = Orbitron({
@@ -221,15 +221,6 @@ export default function Dashboard() {
                   />
                 </div>
               )}
-              <button className="text-gray-700 hover:text-black-600 flex items-center">
-                <FaQuestionCircle className="mr-2" /> Help
-              </button>
-              <button className="text-gray-700 hover:text-black-600 flex items-center">
-                <FaExchangeAlt className="mr-2" /> Switch
-              </button>
-              <button className="text-gray-700 hover:text-black-600 flex items-center">
-                <FaInfoCircle className="mr-2" /> About
-              </button>
               <button onClick={handleLogout} className="text-red-600 hover:text-red-800 flex items-center">
                 <FaSignOutAlt className="mr-2" /> Logout
               </button>
@@ -239,9 +230,9 @@ export default function Dashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8"  >
           {/* AI Context Section */}
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200" id='aicontext'>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold text-gray-800 font-orbitron">AI Context</h2>
               <select

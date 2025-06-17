@@ -1,0 +1,22 @@
+@media (max-width: 1536px) and (min-width: 1281px) {
+    body{
+        overflow-y: hidden;
+    }
+#login_cont{
+scale: 140%!important;
+
+
+}
+
+
+}
+@media (min-width: 1920px) {
+    body{
+        overflow-y: hidden;
+    }
+    #login_cont{
+        scale: 160%!important;
+        
+        
+        }
+}

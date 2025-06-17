@@ -1,0 +1,14 @@
+@media (max-width: 1536px) and (min-width: 1281px) {
+    #sign_cont{
+      scale: 130%;
+      position: relative;
+      top:6rem;
+    }
+}
+@media (min-width: 1920px) {
+  #sign_cont{
+    scale: 150%;
+    position: relative;
+    top:12rem;
+  }
+}
