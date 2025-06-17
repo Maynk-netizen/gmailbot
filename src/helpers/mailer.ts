@@ -5,21 +5,23 @@ interface EmailParams {
     email: string;
     subject: string;
     reply: string;
+    tomail:string;
 }
 
-export const sendEmail = async ({ email, subject, reply }: EmailParams) => {
+export const sendEmail = async ({ email, subject, reply ,tomail}: EmailParams) => {
     try {
         // Configure Gmail transporter
         const transport = nodemailer.createTransport({
             service: "gmail",
             auth: {
                 user: process.env.GMAIL_USER, // Your Gmail address
+              
                 pass: process.env.GMAIL_PASSWORD, // Your Gmail app password
             },
         });
 
         const mailOptions = {
-            from: process.env.GMAIL_USER, // Sender address
+            from: `"${tomail.split('@')[0]}" <${process.env.GMAIL_USER}>`, // Custom From name with original sender email
             to: email, // Recipient address
             subject: subject,
             html: reply,

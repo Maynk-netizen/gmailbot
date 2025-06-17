@@ -1,4 +1,3 @@
-
 import { ChatOpenAI } from "@langchain/openai";
 import {PromptTemplate} from "@langchain/core/prompts";
 import { LLMChain } from "langchain/chains";
@@ -30,7 +29,11 @@ export async  function POST(request: NextRequest) {
         const {senderemail,snippet,subject,toHeader,fromHeader} = reqbody;
         console.log(`senderemail:${senderemail},snippet:${snippet},subject:${subject},toheader:${toHeader},fromheader:${fromHeader.match(/^(.*?)\s*</)[1]}`);
         
-        const finthat = await GoogleUser.findOne({email:toHeader},{emailContexts:{$elemMatch:{targetEmail:senderemail}}},);
+        // Extract email from toHeader
+        const toEmailMatch = toHeader.match(/<([^>]+)>/);
+        const toEmail = toEmailMatch ? toEmailMatch[1] : toHeader;
+        
+        const finthat = await GoogleUser.findOne({email:toEmail},{emailContexts:{$elemMatch:{targetEmail:senderemail}}},);
         if(!finthat){
             return NextResponse.json({
                 message:"no user found"
@@ -47,13 +50,14 @@ export async  function POST(request: NextRequest) {
       await sendEmail({
         email:senderemail,
         subject:subject||'',
-        reply:res.text
+        reply:res.text,
+        tomail:toEmail
       })
       console.log(res);
     
       const updateReply = await GoogleUser.updateOne(
         {
-          email: toHeader,
+          email: toEmail,
         },
         {
           $push: {
