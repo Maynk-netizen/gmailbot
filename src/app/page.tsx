@@ -11,7 +11,7 @@ import FadeContent from "@/components/ui/homeElems/FadeContent"
 import ShinyText from "@/components/ui/homeComps/QNA"
 import { Orbitron } from 'next/font/google'; // Import the Orbit font
 import FeaturesSectionDemo from '@/components/ui/homeComps/Finalqna'
-import type { ReactNode } from "react";
+// import type { ReactNode } from "react";
 
 const orbit = Orbitron({
   subsets: ['latin'],
