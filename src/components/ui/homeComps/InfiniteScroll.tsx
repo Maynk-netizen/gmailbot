@@ -120,6 +120,7 @@ const InfiniteScroll: React.FC<InfiniteScrollProps> = ({
       rafId = requestAnimationFrame(tick);
 
       if (pauseOnHover) {
+
         const stopTicker = () => {
           if (rafId) {
             cancelAnimationFrame(rafId);
