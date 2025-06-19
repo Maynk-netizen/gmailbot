@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, ReactNode } from "react";
+import { useRef, useEffect, useState, ReactNode, CSSProperties } from "react";
 
 interface FadeContentProps {
   children: ReactNode;
@@ -9,6 +9,7 @@ interface FadeContentProps {
   threshold?: number;
   initialOpacity?: number;
   className?: string;
+  style?: CSSProperties;
 }
 
 const FadeContent: React.FC<FadeContentProps> = ({
@@ -20,6 +21,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
   threshold = 0.1,
   initialOpacity = 0,
   className = "",
+  style = {},
 }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -50,6 +52,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
       ref={ref}
       className={className}
       style={{
+        ...style,
         opacity: inView ? 1 : initialOpacity,
         transition: `opacity ${duration}ms ${easing}, filter ${duration}ms ${easing}`,
         filter: blur ? (inView ? 'blur(0px)' : 'blur(10px)') : 'none',

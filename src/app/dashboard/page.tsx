@@ -234,24 +234,22 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8"  >
           {/* AI Context Section */}
           <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200" id='aicontext'>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800 font-orbitron">AI Context</h2>
-              <div className="w-full">
-                <select
-                  className="p-2 border border-gray-300 rounded-lg w-full"
-                  value={selectedTargetEmail}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSelectedTargetEmail(value);
-                    loadEmailContext(value);
-                  }}
-                >
-                  <option value="">Select Target Email</option>
-                  {selectedEmails.map((email) => (
-                    <option key={email} value={email}>{email}</option>
-                  ))}
-                </select>
-              </div>
+            <h2 className="text-2xl font-semibold text-gray-800 font-orbitron mb-4">AI Context</h2>
+            <div className="mb-4">
+              <select
+                className="p-2 border border-gray-300 rounded-lg w-full"
+                value={selectedTargetEmail}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedTargetEmail(value);
+                  loadEmailContext(value);
+                }}
+              >
+                <option value="">Select Target Email</option>
+                {selectedEmails.map((email) => (
+                  <option key={email} value={email}>{email}</option>
+                ))}
+              </select>
             </div>
             <textarea
               className="w-full h-40 p-4 border border-gray-300 rounded-lg"

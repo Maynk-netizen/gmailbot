@@ -15,7 +15,7 @@ body{
     top: 11rem;
     width: 79rem;
     overflow: hidden;
-    background-color:rgb(0,0,0,0.5);
+   
     height: 25rem!important;
 /* background-color: rgb(255,255,255); */
 }
@@ -190,6 +190,7 @@ color:white;
 }#text1{
     position: relative;
     left: 3rem;
+  
 }
 #text2{
 position: relative;
@@ -290,7 +291,7 @@ font-size: 55px;
         left: 5rem;
         width: 105rem;
         overflow: hidden;
-        background-color: rgb(0,0,0,0.5);
+      
         height: 25rem!important;
     }
     #bullets {
@@ -544,7 +545,7 @@ font-size: 55px;
         left: -1rem;
         width: 122rem;
         overflow: hidden;
-        background-color: rgb(0,0,0,0.5);
+   
         height: 25rem!important;
     }
     
@@ -802,3 +803,290 @@ font-size: 55px;
         display: none;
     }
 }
+
+/* Tablet View (768px to 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    #aura {
+        height: 180rem;
+    }
+    
+    #Scanim {
+        top: 8rem;
+        width: 100%;
+        left: 0;
+        height: 35rem !important;
+    }
+    
+    #cont {
+        left: 2rem;
+        top: 3rem;
+    }
+    
+    #bulb, #clock, #thunder, #message {
+        font-size: 60px;
+    }
+    
+    #bulb { left: 2rem; }
+    #clock { left: 12rem; }
+    #thunder { left: 22rem; }
+    #message { left: 32rem; }
+    
+    #advtext {
+        scale: 100%;
+        left: 2rem;
+        width: 90%;
+    }
+    
+    #text1, #text2, #text3, #text4 {
+        left: 0;
+        top: 0;
+    }
+    
+    #text4child {
+        right: 0;
+    }
+    
+    #shiny-text {
+        font-size: 35px;
+        left: 2rem;
+        top: -25rem;
+    }
+    
+    #fsDemo {
+        width: 90%;
+        left: 2rem;
+        scale: 90%;
+    }
+    
+    #QNA_cont {
+        top: 40rem !important;
+    }
+    
+    .bgblue {
+        height: auto;
+        padding: 2rem 0;
+    }
+    
+    #logo_cont {
+        scale: 100%;
+        left: 2rem;
+    }
+    
+    #socials {
+        position: relative;
+        right: 0;
+        top: 2rem;
+        left: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    #socioic {
+        margin: 1rem 0;
+    }
+    
+    #declarations {
+        text-align: center;
+        margin-top: 1rem;
+    }
+}
+
+/* Mobile View (up to 768px) */
+@media (max-width: 420px) {
+    body {
+        overflow-x: hidden;
+     
+        overflow-y: hidden;
+    }
+    
+    #aura {
+        height: 100rem;
+    }
+    #aura2{
+   
+        position: relative;
+        top: -28rem;
+      
+    }
+    
+    #Scanim {
+        display: none;
+
+    }
+    
+    #cont {
+       display: none;
+    }
+    
+   
+    #advtext {
+        scale: 80%;
+        left: 1rem;
+        width: 95%;
+        text-align: center;
+    }
+   
+  
+    #shiny-text {
+        font-size: 30px;
+        left: 1rem;
+        top: -20rem;
+        text-align: center;
+    }
+    
+    #fsDemo {
+        width: 95%;
+        left: 1rem;
+        scale: 80%;
+        display: none;
+    }
+    
+    #QNA_cont {
+  display: none;
+    }
+    
+    .bgblue {
+        height: 5rem;
+        width: 25.5rem;
+        padding: 2rem 0;
+    
+        position: relative;
+        top: -20rem;
+        left: -0.5rem;
+     
+    }
+    #logo{
+        position: relative;
+        left: -6rem;
+    }
+    #logo_cont {
+        scale: 90%;
+        left: -0.5rem;
+        text-align: center;
+    
+        position: relative;
+        top:-1rem;
+        height: 5rem;
+        width: 5rems;
+    }
+    
+    #line {
+        width: 80%;
+        margin: 1rem auto;
+        position: relative;
+        left: -1.5rem;
+    }
+    
+    #bhaukal {
+        display: block;
+        text-align: center;
+        margin: 1rem 0;
+        position: relative;
+        left: -1.6rem;
+    }
+    
+    #socials {
+        position: relative;
+        right: 0;
+        top: -2rem;
+        left: 1rem;
+        display: flex;
+        flex-direction:row;
+        align-items: center;
+    
+        width: 14rem;
+        
+    }
+    
+    #socioic {
+        margin: 3rem ;
+        font-size: 40px;
+    }
+    
+    #declarations {
+        text-align: center;
+        margin-top: 1rem;
+        font-size: 14px;
+        display: none;
+    }
+    
+    .revealed {
+        font-size: 60px;
+    }
+    
+    #btn {
+        scale: 90%;
+        padding: 0.8em 1.75em;
+        background-color: #ffffff;
+        border-radius: 6px;
+        border: 0.3px solid var(--color);
+        transition: 4s;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        z-index: 1;
+        font-weight: 300;
+        font-size: 17px;
+        /* font-family: cursive; */
+        text-transform: uppercase;
+        color: var(--color);
+    }
+    #btn::after,
+  #btn::before {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform: skew(90deg) translate(-50%, -50%);
+    position: absolute;
+    inset: 50%;
+    left: 25%;
+    z-index: -1;
+    transition: 0.5s ease-out;
+    background-color: var(--color);
+  }
+  
+  #btn::before {
+    top: -50%;
+    left: -25%;
+    transform: skew(90deg) rotate(180deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover::before {
+    transform: skew(45deg) rotate(180deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover::after {
+    transform: skew(45deg) translate(-50%, -50%);
+  }
+  
+  #btn:hover {
+    color: var(--color2);
+  }
+  
+  #btn:active {
+    filter: brightness(0.7);
+    transform: scale(0.98);
+  }
+  
+}
+:root {
+    --line-color: #000; /* Default to black (light mode) */
+    --border-color:1px solid #000;
+    --opacitylimit: background-color:rgb(128,128,128,0.3);
+    --main-text-color: #000; 
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --line-color: #fff; /* White in dark mode */
+      --border-color: 1px solid #fff;
+      --opacitylimit: background-color:rgb(0,0,0,0.5);
+      --main-text-color: #fff;
+    }
+  }

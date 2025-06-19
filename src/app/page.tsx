@@ -11,6 +11,8 @@ import FadeContent from "@/components/ui/homeElems/FadeContent"
 import ShinyText from "@/components/ui/homeComps/QNA"
 import { Orbitron } from 'next/font/google'; // Import the Orbit font
 import FeaturesSectionDemo from '@/components/ui/homeComps/Finalqna'
+import type { ReactNode } from "react";
+
 const orbit = Orbitron({
   subsets: ['latin'],
   weight: ['400', '700'], // Specify the weights you need
@@ -31,6 +33,19 @@ const items = [
   { content: <img src="/ss.png"/>},
   { content:<img src="/ss.png"/> },
 ];
+
+interface FadeContentProps {
+  children: ReactNode;
+  blur?: boolean;
+  duration?: number;
+  easing?: string;
+  delay?: number;
+  threshold?: number;
+  initialOpacity?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
 export default function AuroraBackgroundDemo() {
   return (
     <AuroraBackground id="aura" >
@@ -67,15 +82,15 @@ encryptedClassName="encrypted"
              </motion.div>
  
   
-<div style={{height: '500px', position: 'relative'}} id="Scanim">
+<div style={{height: '500px', position: 'relative',backgroundColor: "var(--opacitylimit)" } }id="Scanim">
 
     <div id="cont" style={{position:"relative",zIndex:"15"}}>
     <FadeContent blur={true} duration={4000} easing="ease-out" initialOpacity={0} >
-<span id="bulb_span"><i id="bulb"className="fa-regular fa-lightbulb"></i><i  id="clock"className="fa-regular fa-clock"></i><i className="fa-solid fa-bolt" id="thunder"></i><i className="fa-solid fa-envelope"id="message"></i></span>
+<span id="bulb_span"><i id="bulb" className="fa-regular fa-lightbulb"></i><i  id="clock"className="fa-regular fa-clock"></i><i className="fa-solid fa-bolt" id="thunder"></i><i className="fa-solid fa-envelope"id="message"></i></span>
 
 </FadeContent>
 <div id="advtext" >
-<FadeContent blur={true} duration={4000} easing="ease-out" initialOpacity={5} >
+<FadeContent style={{color: "var(--line-color)" }} blur={true} duration={4000} easing="ease-out" initialOpacity={5} >
 <span id="text1"className={`${orbit.className}`}>    <ShinyText text="Smart solution" disabled={false} speed={6} className='custom-class' /><br /> <ShinyText text="for" disabled={false} speed={6} className='custom-class' /> smart peeps</span>
 <span id="text2"className={`${orbit.className}`}>Time saving</span>
 <span id="text3"className={`${orbit.className}`}>Boost Productivity</span>
@@ -127,12 +142,12 @@ encryptedClassName="encrypted"
     <FeaturesSectionDemo />
 
 </div>
-<div className="bgblue">
+<div className="bgblue" style={{ borderTop: "var(--border-color)" }}>
   <div id="logo_cont">
   <span id="logo" className={`text-3xl md:text-7xl font-bold dark:text-white text-center ${orbit.className}`}>NIYOJAKA</span>
-  <hr  id ="line"style={{color:"white"}} />
-  <span id="bhaukal">NIYOJAKA | Your very own mail organizer</span> 
-  <div id ="socials">
+  <hr id="line" style={{ color: "var(--line-color)" }} />
+  <span id="bhaukal" style={{color : "var(--line-color)"}}>NIYOJAKA | Your very own mail organizer</span> 
+  <div id ="socials" style={{color:"var(--line-color)"}}>
     <span id="socioic"><i className="fa-brands fa-twitter"></i></span>
     <span id="socioic"><i className="fa-brands fa-x-twitter"></i></span>
     <span id="socioic"><i className="fa-brands fa-linkedin-in"></i></span>
