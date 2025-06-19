@@ -85,6 +85,6 @@ h2.font-orbitron,
 
 @media (max-width: 420px) {
   body{
-    overflow-y: scroll;
+    overflow-y:auto;
   }
 }
