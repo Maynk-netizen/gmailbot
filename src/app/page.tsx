@@ -34,17 +34,17 @@ const items = [
   { content:<img src="/ss.png"/> },
 ];
 
-interface FadeContentProps {
-  children: ReactNode;
-  blur?: boolean;
-  duration?: number;
-  easing?: string;
-  delay?: number;
-  threshold?: number;
-  initialOpacity?: number;
-  className?: string;
-  style?: React.CSSProperties;
-}
+// interface FadeContentProps {
+//   children: ReactNode;
+//   blur?: boolean;
+//   duration?: number;
+//   easing?: string;
+//   delay?: number;
+//   threshold?: number;
+//   initialOpacity?: number;
+//   className?: string;
+//   style?: React.CSSProperties;
+// }
 
 export default function AuroraBackgroundDemo() {
   return (
