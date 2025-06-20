@@ -897,7 +897,7 @@ font-size: 55px;
 }
 
 /* Mobile View (up to 768px) */
-@media (max-width: 420px) {
+@media (max-width: 400px) {
     body {
         overflow-x: hidden;
      
