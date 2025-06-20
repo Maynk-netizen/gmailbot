@@ -896,8 +896,13 @@ font-size: 55px;
     }
 }
 
+/* @media (max-width: 720px) {
+    body{
+        border:2px solid red;
+    }
+} */
 /* Mobile View (up to 768px) */
-@media (max-width: 400px) {
+@media (max-width:  720px) {
     body {
         overflow-x: hidden;
      
