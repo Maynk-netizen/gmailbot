@@ -10,6 +10,13 @@ interface EmailParams {
 
 export const sendEmail = async ({ email, subject, reply ,tomail}: EmailParams) => {
     try {
+        // Check if required environment variables are set
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_PASSWORD) {
+            console.error("Missing Gmail credentials: GMAIL_USER or GMAIL_PASSWORD environment variables not set");
+            throw new Error("Gmail credentials not configured");
+        }
+
+        console.log("Configuring Gmail transporter...");
         // Configure Gmail transporter
         const transport = nodemailer.createTransport({
             service: "gmail",
@@ -27,11 +34,14 @@ export const sendEmail = async ({ email, subject, reply ,tomail}: EmailParams) =
             html: reply,
         };
 
+        console.log(`Sending email to: ${email}, from: ${process.env.GMAIL_USER}, subject: ${subject}`);
+        
         const mailResponse = await transport.sendMail(mailOptions);
-        console.log(mailResponse);
+        console.log("Email sent successfully:", mailResponse);
 
         return mailResponse;
     } catch (error) {
-        return NextResponse.json({ error });
+        console.error("Error in sendEmail function:", error);
+        throw error; // Re-throw the error instead of returning NextResponse
     }
 };

@@ -150,6 +150,7 @@ export default function EmailNotifier() {
   const isDashboardPage = pathname === '/dashboard';
 
   useEffect(() => {
+    console.log("🚀 EmailNotifier: useEffect triggered, isDashboardPage:", isDashboardPage);
     if (!isDashboardPage) return;
 
     const handleEmailResponse = (data: EmailResponse) => {
@@ -171,12 +172,15 @@ export default function EmailNotifier() {
     };
 
     const fetchEmailData = async () => {
+      console.log("🔄 EmailNotifier: Fetching email data...");
       try {
         const response = await fetch('/api/reader', {
           method: 'POST',
         });
 
+        console.log("📬 EmailNotifier: Reader response status:", response.status);
         const data: EmailResponse = await response.json();
+        console.log("📬 EmailNotifier: Reader response data:", data);
 
         if (response.status === 401 && data.authUrl) {
           window.location.href = data.authUrl;

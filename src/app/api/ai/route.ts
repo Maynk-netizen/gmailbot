@@ -24,10 +24,16 @@ const chain = new LLMChain({
     prompt:promptTemplate,
 })
 export async  function POST(request: NextRequest) {
+    console.log("🚀 AI Route called at:", new Date().toISOString());
     try {
        const reqbody = await request.json();
+        console.log("📧 Raw request body:", JSON.stringify(reqbody, null, 2));
         const {senderemail,snippet,subject,toHeader,fromHeader} = reqbody;
-        console.log(`senderemail:${senderemail},snippet:${snippet},subject:${subject},toheader:${toHeader},fromheader:${fromHeader.match(/^(.*?)\s*</)[1]}`);
+        console.log(`📋 Parsed data - senderemail:${senderemail}, snippet:${snippet}, subject:${subject}, toheader:${toHeader}, fromheader:${fromHeader?.match ? fromHeader.match(/^(.*?)\s*</)?.[1] : fromHeader}`);
+        
+        // Check environment variables
+        console.log("🔧 Environment check - GMAIL_USER:", process.env.GMAIL_USER ? "✅ Set" : "❌ Missing");
+        console.log("🔧 Environment check - GMAIL_PASSWORD:", process.env.GMAIL_PASSWORD ? "✅ Set" : "❌ Missing");
         
         // Extract email from toHeader
         const toEmailMatch = toHeader.match(/<([^>]+)>/);
@@ -47,12 +53,28 @@ export async  function POST(request: NextRequest) {
           context:`you are a email reply generator who acts like the receiver and replies to the mails,${usrcontext},do not include subject or subject :Re in your responses`,
           question:`from:${fromHeader},subject:${subject},email:${snippet}`
       })
-      await sendEmail({
-        email:senderemail,
-        subject:subject||'',
-        reply:res.text,
-        tomail:toEmail
-      })
+      
+      console.log("AI response generated:", res.text);
+      console.log("Attempting to send email...");
+      
+      try {
+        const emailResult = await sendEmail({
+          email:senderemail,
+          subject:subject||'',
+          reply:res.text,
+          tomail:toEmail
+        });
+        
+        if (emailResult && emailResult.messageId) {
+          console.log("Email sent successfully:", emailResult.messageId);
+        } else {
+          console.error("Email sending failed:", emailResult);
+        }
+      } catch (emailError) {
+        console.error("Failed to send email:", emailError);
+        // Continue with saving the reply even if email fails
+      }
+      
       console.log(res);
     
       const updateReply = await GoogleUser.updateOne(

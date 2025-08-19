@@ -271,13 +271,29 @@ async function processAndStoreEmails(userEmail: string, messages: GmailMessage[]
         const snippet = newMessage.snippet||'';
         const subject = newMessage.subject||'';
         
-        await axios.post(`https://gmailbot-dun.vercel.app/api/ai`,{
+        // Use local API in development, production URL in production
+        const apiUrl = process.env.NODE_ENV === 'development' 
+          ? 'http://localhost:3000/api/ai'
+          : 'https://gmailbot-dun.vercel.app/api/ai';
+          
+        console.log(`🔄 Calling AI route: ${apiUrl}`);
+        console.log(`📧 Email data being sent to AI:`, {
+          senderemail,
+          snippet,
+          subject,
+          toHeader,
+          fromHeader
+        });
+        
+        const aiResponse = await axios.post(apiUrl, {
           senderemail:senderemail,
           snippet:snippet,
           subject:subject,
           toHeader:toHeader,
           fromHeader: fromHeader,
         });
+        
+        console.log(`✅ AI route response:`, aiResponse.status, aiResponse.data);
       }
     }
 
@@ -299,10 +315,11 @@ async function processAndStoreEmails(userEmail: string, messages: GmailMessage[]
 }
 
 export async function POST(request: NextRequest) {
+  console.log("📬 Reader route called at:", new Date().toISOString());
   try {
     // Get authenticated user
     const authenticatedUser = await getAuthenticatedUser(request);
-    console.log(`Processing reply route for user: ${authenticatedUser.email}`);
+    console.log(`📬 Processing reply route for user: ${authenticatedUser.email}`);
 
     // Connect to main database and get user
     await connectDB();
